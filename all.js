@@ -190,4 +190,16 @@ ticketCardArea.innerHTML = selectCard;
 searchResultText.innerHTML = `本次搜尋共 ${areaNum} 筆資料`;
 }
 
-regionSearch.addEventListener('change', checkArea);
+regionSearch.addEventListener('change', checkArea); 
+
+//新增甜甜圈套件
+
+const chart = c3.generate({
+  bindto: '#chart', // HTML 元素綁定
+  data: {
+    columns: [
+      ['data1', 30, 200, 100, 400, 150, 250],
+      ['data2', 50, 20, 10, 40, 15, 25]
+    ] // 資料存放
+  }
+});
