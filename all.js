@@ -36,6 +36,7 @@ axios.get('https://raw.githubusercontent.com/hexschool/js-training/main/travelAP
   .then(function(response){
     data = response.data;
     init();
+    renderC3(data);
   })
 
 
@@ -103,13 +104,14 @@ switch(true){
     return alertMessage.innerHTML = `<span>必填!</span>`;
 }
 
+alertMessage.innerHTML = "";
 
 data.push(obj);
 init(); //初始化函式
+renderC3(data);
 });
 
 // 卡片內容
-
 function init() {
 let addCard = "";
 let selectNum = 0;
@@ -156,92 +158,112 @@ data.forEach(function (item) {
 });
 //把卡片加入頁面中
 ticketCardArea.innerHTML = addCard;
-
 }
-init();
+
 
 // 篩選資料
 function checkArea(e) {
-let selectCard = "";
-let areaNum = 0;
-data.forEach(function (item) {
-  let card = `
+  let selectCard = "";
+  let areaNum = 0;
+  let filteredData = data.filter(function (item) {
+    if (e.target.value === item.area) {
+      return true;
+    } else if (e.target.value === "全部地區") {
+      return true;
+    }
+    return false;
+  });
+
+  filteredData.forEach(function (item) {
+    let card = `
       <li class="ticketCard">
-      <div class="ticketCard-img">
-      <a href="#">
-          <img src="${item.imgUrl}" alt="">
-      </a>
-      <div class="ticketCard-region">${item.area}</div>
-      <div class="ticketCard-rank">${item.rate}</div>
-      </div>
-      <div class="ticketCard-content">
-      <div>
-          <h3>
-          <a href="#" class="ticketCard-name">${item.name}</a>
-          </h3>
-          <p class="ticketCard-description">
-          ${item.description}
-          </p>
-      </div>
-      <div class="ticketCard-info">
-          <p class="ticketCard-num">
-          <span><i class="fas fa-exclamation-circle"></i></span>
-          剩下最後 <span id="ticketCard-num"> ${item.group} </span> 組
-          </p>
-          <p class="ticketCard-price">
-          TWD <span id="ticketCard-price">$${item.price}</span>
-          </p>
-      </div>
-      </div>
-  </li>
-      `;
-  if (e.target.value === item.area) {
+        <div class="ticketCard-img">
+          <a href="#">
+            <img src="${item.imgUrl}" alt="">
+          </a>
+          <div class="ticketCard-region">${item.area}</div>
+          <div class="ticketCard-rank">${item.rate}</div>
+        </div>
+        <div class="ticketCard-content">
+          <div>
+            <h3>
+              <a href="#" class="ticketCard-name">${item.name}</a>
+            </h3>
+            <p class="ticketCard-description">
+              ${item.description}
+            </p>
+          </div>
+          <div class="ticketCard-info">
+            <p class="ticketCard-num">
+              <span><i class="fas fa-exclamation-circle"></i></span>
+              剩下最後 <span id="ticketCard-num">${item.group}</span> 組
+            </p>
+            <p class="ticketCard-price">
+              TWD <span id="ticketCard-price">$${item.price}</span>
+            </p>
+          </div>
+        </div>
+      </li>
+    `;
     selectCard += card;
     areaNum += 1;
-  } else if (e.target.value === "全部地區") {
-    selectCard += card;
+  });
+
+  if (e.target.value === "全部地區") {
     areaNum = data.length;
   }
-});
-ticketCardArea.innerHTML = selectCard;
-searchResultText.innerHTML = `本次搜尋共 ${areaNum} 筆資料`;
+
+  ticketCardArea.innerHTML = selectCard;
+  searchResultText.innerHTML = `本次搜尋共 ${areaNum} 筆資料`;
+  renderC3(filteredData); // 更新圖表
 }
 
 regionSearch.addEventListener('change', checkArea); 
 
-//新增甜甜圈套件
+//donut套件-篩選地區資料
 
-var chart = c3.generate({
-  data: {
-      columns: [
-          ['data1', 30],
-          ['data2', 120],
-      ],
-      type : 'donut',
-      onclick: function (d, i) { console.log("onclick", d, i); },
-      onmouseover: function (d, i) { console.log("onmouseover", d, i); },
-      onmouseout: function (d, i) { console.log("onmouseout", d, i); }
-  },
-  donut: {
-      title: "Iris Petal Width"
-  }
+function renderC3(filteredData = []){
+  let totalObj = {};
+  filteredData.forEach(function(item){
+    if(totalObj[item.area] == undefined){
+      totalObj[item.area] = 1;
+    }else{
+      totalObj[item.area] += 1;
+    }
+  });
+
+
+let newData = [];
+let area = Object.keys(totalObj);
+
+area.forEach(function(item){
+  let ary = [];
+  ary.push(item);
+  ary.push(totalObj[item]);
+  newData.push(ary);
 });
 
-setTimeout(function () {
-  chart.load({
-      columns: [
-          ["setosa", 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.4, 0.2, 0.5, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2, 0.2, 0.4, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.2, 0.2, 0.3, 0.3, 0.2, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2],
-          ["versicolor", 1.4, 1.5, 1.5, 1.3, 1.5, 1.3, 1.6, 1.0, 1.3, 1.4, 1.0, 1.5, 1.0, 1.4, 1.3, 1.4, 1.5, 1.0, 1.5, 1.1, 1.8, 1.3, 1.5, 1.2, 1.3, 1.4, 1.4, 1.7, 1.5, 1.0, 1.1, 1.0, 1.2, 1.6, 1.5, 1.6, 1.5, 1.3, 1.3, 1.3, 1.2, 1.4, 1.2, 1.0, 1.3, 1.2, 1.3, 1.3, 1.1, 1.3],
-          ["virginica", 2.5, 1.9, 2.1, 1.8, 2.2, 2.1, 1.7, 1.8, 1.8, 2.5, 2.0, 1.9, 2.1, 2.0, 2.4, 2.3, 1.8, 2.2, 2.3, 1.5, 2.3, 2.0, 2.0, 1.8, 2.1, 1.8, 1.8, 1.8, 2.1, 1.6, 1.9, 2.0, 2.2, 1.5, 1.4, 2.3, 2.4, 1.8, 1.8, 2.1, 2.4, 2.3, 1.9, 2.3, 2.5, 2.3, 1.9, 2.0, 2.3, 1.8],
-      ]
-  });
-}, 1500);
+const chart = c3.generate({
+  bindto: "#chart",
+  data: {
+    columns: newData,
+    type : 'donut',
+    colors:{
+      "台北":"#26BFC7",
+      "台中":"#5151D3",
+      "高雄":"#E68618",
+    }
+  },
+  donut: {
+    title: "套票地區比重",
+    width: 10,
+  },
+  size: {
+    width: 180,
+    height: 180
+  }
 
-setTimeout(function () {
-  chart.unload({
-      ids: 'data1'
-  });
-  chart.unload({
-      ids: 'data2'
-  });
-}, 2500);
+});
+
+}
+renderC3();
