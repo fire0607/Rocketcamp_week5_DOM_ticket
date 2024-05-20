@@ -53,6 +53,8 @@ const regionSearch = document.querySelector(".regionSearch"); //地區搜尋
 const searchResultText = document.querySelector("#searchResult-text");//搜尋結果
 const ticketCardArea = document.querySelector(".ticketCard-area"); //卡片內容
 
+const alertMessage = document.querySelector(".alert-message");//必填訊息
+
 //註冊監聽事件
 btn.addEventListener("click",function(e){
 let obj = {};
@@ -67,23 +69,38 @@ obj.price = ticketPrice.value;
 obj.rate = ticketRate.value;
 
 //若沒有輸入內容則顯示提示框
+// switch(true){
+//   case ticketName.value === "" :
+//     return alert('請輸入套票名稱!');
+//   case ticketImgUrl.value === "":
+//     return alert('請輸入圖片網址!');
+//   case ticketPrice.value === "":
+//     return alert('請輸入套票金額!');
+//   case ticketNum.value === "" :
+//     return alert('請輸入套票組數!');
+//   case ticketRate.value ==="":
+//     return alert('請輸入套票星級!');
+//   case ticketDescription.value ==="" :
+//     return alert('請輸入套票描述!');
+// }
+
+// if (ticketRate.value >10){
+//   return alert('套票星級必須是 1 到 10 之間的數字！')
+// }
+
 switch(true){
   case ticketName.value === "" :
-    return alert('請輸入套票名稱!');
+    return alertMessage.innerHTML = `<span>必填!</span>`;
   case ticketImgUrl.value === "":
-    return alert('請輸入圖片網址!');
+    return alertMessage.innerHTML = `<span>必填!</span>`;
   case ticketPrice.value === "":
-    return alert('請輸入套票金額!');
+    return alertMessage.innerHTML = `<span>必填!</span>`;
   case ticketNum.value === "" :
-    return alert('請輸入套票組數!');
+    return alertMessage.innerHTML = `<span>必填!</span>`;
   case ticketRate.value ==="":
-    return alert('請輸入套票星級!');
+    return alertMessage.innerHTML = `<span>必填!</span>`;
   case ticketDescription.value ==="" :
-    return alert('請輸入套票描述!');
-}
-
-if (ticketRate.value >10){
-  return alert('套票星級必須是 1 到 10 之間的數字！')
+    return alertMessage.innerHTML = `<span>必填!</span>`;
 }
 
 
@@ -194,12 +211,37 @@ regionSearch.addEventListener('change', checkArea);
 
 //新增甜甜圈套件
 
-const chart = c3.generate({
-  bindto: '#chart', // HTML 元素綁定
+var chart = c3.generate({
   data: {
-    columns: [
-      ['data1', 30, 200, 100, 400, 150, 250],
-      ['data2', 50, 20, 10, 40, 15, 25]
-    ] // 資料存放
+      columns: [
+          ['data1', 30],
+          ['data2', 120],
+      ],
+      type : 'donut',
+      onclick: function (d, i) { console.log("onclick", d, i); },
+      onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+      onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+  },
+  donut: {
+      title: "Iris Petal Width"
   }
 });
+
+setTimeout(function () {
+  chart.load({
+      columns: [
+          ["setosa", 0.2, 0.2, 0.2, 0.2, 0.2, 0.4, 0.3, 0.2, 0.2, 0.1, 0.2, 0.2, 0.1, 0.1, 0.2, 0.4, 0.4, 0.3, 0.3, 0.3, 0.2, 0.4, 0.2, 0.5, 0.2, 0.2, 0.4, 0.2, 0.2, 0.2, 0.2, 0.4, 0.1, 0.2, 0.2, 0.2, 0.2, 0.1, 0.2, 0.2, 0.3, 0.3, 0.2, 0.6, 0.4, 0.3, 0.2, 0.2, 0.2, 0.2],
+          ["versicolor", 1.4, 1.5, 1.5, 1.3, 1.5, 1.3, 1.6, 1.0, 1.3, 1.4, 1.0, 1.5, 1.0, 1.4, 1.3, 1.4, 1.5, 1.0, 1.5, 1.1, 1.8, 1.3, 1.5, 1.2, 1.3, 1.4, 1.4, 1.7, 1.5, 1.0, 1.1, 1.0, 1.2, 1.6, 1.5, 1.6, 1.5, 1.3, 1.3, 1.3, 1.2, 1.4, 1.2, 1.0, 1.3, 1.2, 1.3, 1.3, 1.1, 1.3],
+          ["virginica", 2.5, 1.9, 2.1, 1.8, 2.2, 2.1, 1.7, 1.8, 1.8, 2.5, 2.0, 1.9, 2.1, 2.0, 2.4, 2.3, 1.8, 2.2, 2.3, 1.5, 2.3, 2.0, 2.0, 1.8, 2.1, 1.8, 1.8, 1.8, 2.1, 1.6, 1.9, 2.0, 2.2, 1.5, 1.4, 2.3, 2.4, 1.8, 1.8, 2.1, 2.4, 2.3, 1.9, 2.3, 2.5, 2.3, 1.9, 2.0, 2.3, 1.8],
+      ]
+  });
+}, 1500);
+
+setTimeout(function () {
+  chart.unload({
+      ids: 'data1'
+  });
+  chart.unload({
+      ids: 'data2'
+  });
+}, 2500);
